@@ -1,0 +1,105 @@
+# bd
+create table aluno(
+mat varchar(10) not null primary key,
+nome varchar(80) not null,
+endereco varchar(80) not null,
+cidade varchar(25) not null
+);
+
+create table disciplina(
+cod_disc varchar(5) not null primary key,
+nome_disc varchar(50) not null,
+carga_hor varchar(5) not null);
+
+create table professor(
+cod_prof varchar(7) primary key,
+nome_prof varchar(60) not null,
+enderco varchar(60) not null,
+cidade varchar(60) not null
+);
+
+create table turma(
+cod_disc varchar(5) not null,
+cod_turma varchar(4) not null,
+cod_prof varchar(7) not null,
+ano year not null,
+horario varchar(7) not null,
+primary key (cod_disc, cod_turma, cod_prof, ano),
+constraint fk_turma_disciplina foreign key(cod_disc)references disciplina(cod_disc),
+constraint fk_turma_professor foreign key(cod_prof)references professor(cod_prof)
+);
+
+
+create table historico(
+mat varchar(10) not null,
+cod_disc varchar(5) not null,
+cod_turma varchar(4) not null,
+cod_prof varchar(7) not null,
+ano year not null,
+frequencia varchar(4) not null,
+notas float not null,
+primary key(mat, cod_disc, cod_turma, cod_prof, ano)
+);
+
+alter table historico add constraint fk_historico_mat foreign key(mat)references aluno(mat);
+alter table historico add constraint fk_historico_disciplina foreign key(cod_disc)references disciplina(cod_disc);
+alter table historico add constraint fk_historico_turma foreign key(cod_disc, cod_turma, cod_prof, ano) references turma(cod_disc, cod_turma, cod_prof
+, ano);
+alter table historico add constraint fk_historico_prof foreign key(cod_disc, cod_turma, cod_prof, ano)
+ references turma(cod_disc, cod_turma, cod_prof, ano);
+alter table historico add constraint fk_historico_ano foreign key(cod_disc, cod_turma, cod_prof, ano)references turma(cod_disc, cod_turma, cod_prof, ano);
+
+
+insert into aluno (mat, nome, endereco, cidade) values
+('2015010101', 'JOSE DE ALENCAR', 'RUA DAS ALMAS', 'NATAL'),
+('2015010102', 'JOÃO JOSÉ', 'AVENIDA RUY CARNEIRO', 'JOÃO PESSOA'),
+('2015010103', 'MARIA JOAQUINA', 'RUA CARROSSEL', 'RECIFE'),
+('2015010104', 'MARIA DAS DORES', 'RUA DAS LADEIRAS', 'FORTALEZA'),
+('2015010105', 'JOSUÉ CLAUDINO DOS SANTOS', 'CENTRO', 'NATAL'),
+('2015010106', 'JOSUÉLISSON CLAUDINO DOS SANTOS', 'CENTRO','NATAL');
+
+
+insert into disciplina(cod_disc, nome_disc, carga_hor) values
+('BD', 'BANCO DE DADOS', '100'),
+('POO', 'PROGRAMAÇÃO COM ACESSO A BANCO DE DADOS', '100'),
+('WEB', 'AUTORIA WEB', '50'),
+('ENG', 'ENGENHARIA DE SOFTWARE', '80');
+
+insert into professor(cod_prof, nome_prof, enderco, cidade) values
+('212131', 'NICKERSON FERREIRA', 'RUA MANAÍRA', 'JOÃO PESSOA'),
+('122135', 'ADORILSON BEZERRA', 'AVENIDA SALGADO FILHO', 'NATAL'),
+('192011', 'DIEGO OLIVEIRA', 'AVENIDA ROBERTO FREIRE', 'NATAL');
+
+insert into turma(cod_disc, cod_turma, cod_prof, ano, horario) values
+('BD', '1', '212131', '2015', '11H-12H'),
+('BD', '2', '212131', '2015', '13H-14H'),
+('POO', '1', '192011', '2015', '08H-09H'),
+('WEB', '1', '192011', '2015', '07H-08H'),
+('ENG', '1', '122135', '2015', '10H-11H');
+
+insert into historico(mat, cod_disc, cod_turma, cod_prof, ano, frequencia, notas) values
+('2015010106','ENG','1','122135','2015','90%%',7.5);
+
+
+
+select mat from historico
+where cod_disc='WEB' and ano='2015' and notas<6;      #EX A   
+
+select mat, avg(notas) from historico where cod_disc= 'POO' and ano='2015';  #ex b
+;
+
+select mat, avg(notas) as media from historico where cod_disc='POO'         #ex c
+and ano='2015' having media>6;
+
+select count(cidade) from aluno where cidade<>'Natal'; #quantas são diferentes de natal  exd
+
+
+select cidade from aluno where cidade<>'Natal';      #quais são as cidades diferentes de natal  ex d
+
+select * from aluno order by nome;
+
+
+
+
+
+
