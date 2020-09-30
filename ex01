@@ -1,0 +1,133 @@
+create table if not exists jogador(
+matricula integer auto_increment primary key,
+nome varchar(40) not null,
+cpf varchar(14) not null unique,
+cod_time integer not null
+);
+alter table jogador add constraint fk_jogador_time foreign key(cod_time)references tbl_time(cod_time);
+
+create table tbl_time(
+cod_time integer auto_increment primary key,
+nome varchar(40) not null,
+num_socios smallint not null
+);
+
+create table telefone(
+cod_telefone integer primary key auto_increment,
+num varchar(9) not null,
+matricula integer not null,
+constraint fk_telefone_jogador foreign key(matricula)references jogador
+(matricula)
+);
+
+insert into tbl_time(nome, num_socios) values
+('Ziketas', 31),
+('São Paulo', 10000),
+('Palmeiras', 2000);
+
+
+insert into jogador(nome, cpf, cod_time) values 
+('Pedro Cobuci', '111.222.333-44',1),
+('Cristiano Ronaldo', '111.222.333-45',2),
+('Rony', '111.222.333-46',3),
+('Gabriel Jesus','111.222.333-47',2),
+('Lionel Messi','111.222.333.48',1);
+
+
+insert into telefone(num,matricula) values
+('999912349',5),
+('999912342',3),
+('928282889',4),
+('323645645',3),
+('243686724',5),
+('473286759',1),
+('278483122',1);
+
+
+select * from jogador where cod_time=3; #01
+
+select jogador.nome, telefone.num from telefone inner join jogador on telefone.matricula = jogador.matricula; #02
+
+select tbl_time.nome, jogador.nome from jogador inner join tbl_time on jogador.cod_time = tbl_time.cod_time; # 03
+
+select tbl_time.nome, jogador.nome, telefone.num from telefone inner join jogador on telefone.matricula = jogador.matricula
+inner join tbl_time on jogador.cod_time = tbl_time.cod_time;                                         #04
+
+select nome from jogador where cod_time=2;                                #ex05 
+
+select nome from jogador where cod_time=1 order by cod_time;              #ex06
+
+select count(nome) from tbl_time where cod_time=1;                        #ex07
+
+select nome, num_socios from tbl_time;                                    #ex08
+
+select jogador.nome, tbl_time.num_socios from tbl_time inner join jogador on    #ex09
+tbl_time.cod_time = jogador.cod_time;
+
+delimiter [[                        #criar stored procedure
+create procedure lista_jogador(matricula_jogador int)
+
+begin
+     select nome, cod_time from jogador where matricula = matricula_jogador;
+	
+
+end [[
+delimiter ;
+
+call lista_jogador(1);
+call lista_jogador(4);
+
+
+
+delimiter @
+create procedure sp_lista_time(var_cod_time int)
+begin
+    select * from tbl_time where cod_time = var_cod_time;
+
+end @
+delimiter ;
+
+
+call sp_lista_time(1);
+
+delimiter @
+create procedure lista_jogador_time(time_jogador int )
+
+begin
+    select jogador.nome as jogador, tbl_time.nome from tbl_time inner join jogador on tbl_time.cod_time = jogador.cod_time
+    where jogador.matricula = time_jogador;
+
+
+end @
+delimiter ;
+
+call lista_jogador_time(1);
+
+delimiter @
+create procedure sp_insere_time(var_nome varchar(40), var_socios smallint)
+begin
+    insert into tbl_time (nome,num_socios) values
+    (var_nome, var_socios);
+     select * from tbl_time;
+end @
+delimiter ;
+drop procedure sp_insere_time;
+call sp_insere_time('Equipe 04',6);
+
+delimiter @
+create procedure sp_insere_jog (var_nome varchar(40), var_cpf varchar(14), cod_time int)
+begin
+    insert into jogador (nome,cpf,cod_time) values
+     (var_nome, var_cpf, cod_time);
+    select * from jogador;
+end @
+delimiter ;
+drop procedure sp_insere_tel;
+delimiter @
+create procedure sp_insere_tel (var_num varchar(9), var_matricula int)
+begin
+  insert into telefone (num,matricula) values
+  (var_num, var_matricula);
+  select * from telefone;
+end @
+delimiter ;
