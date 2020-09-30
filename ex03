@@ -1,0 +1,74 @@
+# bd
+create database exo1;
+use exo1;
+
+create table loja(
+id_nf integer not null,
+id_item integer not null,
+cod_prod integer not null,
+valor_unit float not null, 
+quantidade integer not null,
+desconto integer 
+);
+insert into loja(id_nf, id_item, cod_prod, valor_unit, quantidade,desconto)
+values(6, 1, 1, 25.00,22,15),
+(6, 2, 3, 15.00, 25,20),
+(7, 1, 1, 25.00, 10,3),
+(7, 2, 2, 13.50, 10,4),
+(7, 3, 3, 15.00, 10,4),
+(7, 4, 5, 30.00, 10,1);
+
+select * from loja     #ex02
+where desconto >=1;
+
+
+select ifnull (desconto,0) from loja; #ex03
+alter table loja modify column desconto integer;
+select sum(valor_unit) from loja;
+select avg(valor_unit) from loja;
+
+
+select id_nf, id_item, cod_prod from loja   #ex a
+where desconto is null;
+
+select id_nf, id_item, cod_prod, valor_unit,   #ex b
+valor_unit-valor_unit*desconto/100 as valor_vendido from loja
+where desconto is not null;
+
+#update alter table modificar estrutura
+update loja set desconto = 0 where desconto is null; #ex c
+
+select id_nf, id_item, cod_prod, valor_unit,quantidade, quantidade*valor_unit  #ex d
+as valor_total, desconto, valor_unit-valor_unit * desconto/100;
+
+
+select id_nf,sum(quantidade*valor_unit) as valor_total
+from loja group by id_nf order by valor_total desc;    #ex e
+
+select id_nf, sum(valor_unit-valor_unit*desconto/100)  as valor_vendido,
+ sum(quantidade*valor_unit) as valor_total from loja    #ex f
+group by id_nf order by valor_vendido desc;
+
+select cod_prod, sum(quantidade) from loja
+group by cod_prod order by sum(quantidade) desc limit 1;            #ex g                         #ex g
+
+select id_nf, cod_prod, quantidade from loja
+where quantidade>10 group by id_nf;                   #ex h
+
+select id_nf, sum(quantidade*valor_unit) as valor_tot from loja
+where valor_tot>500 group by id_nf;     #valor_tot não existe na base, devemos usar having
+
+select id_nf, sum(quantidade*valor_unit) as valor_tot from loja
+group by id_nf having valor_tot>500 order by valor_tot;    #ex i
+
+select cod_prod, avg(desconto) from loja   #ex j (media=soma dividido pelo num)
+group by cod_prod;
+
+select cod_prod, sum(desconto) as soma, count(desconto) as num_desconto,
+max(desconto) as maior_desconto, min(desconto) as menor_desconto, 
+avg(desconto) as media_desconto from loja group by cod_prod;        #ex k 
+
+select id_nf, count(quantidade) as qtde_itens from loja group by id_nf 
+having count(quantidade)>3;
+
+
